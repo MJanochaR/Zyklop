@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Zyklus">
+<meta name="theme-color" content="#f6f4f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151417" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Zyklus</title>
+<style>
+:root{
+  --bg:#f6f4f0; --card:#ffffff; --card2:#f0ede7; --text:#1f1d1a; --muted:#6c675f; --faint:#a39d93; --line:#e3ded5; --grid:#ece8e1;
+  --accent:#4f46b8; --accent-bg:#ebe9fb;
+  --fert:#d9553b; --fert-bg:#fbe6e0; --rel:#d99a2b; --rel-bg:#fbefd6; --inf:#1f8a76; --inf-bg:#dcf1eb; --none:#b9b3a9; --none-bg:#efece6;
+  --danger:#b3261e; --danger-bg:#fbe4e2; --warn:#8a5a00; --warn-bg:#fdf1d8; --info:#3b4a63; --info-bg:#e8edf5;
+  --radius:14px; --tab-h:58px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#151417; --card:#211f24; --card2:#2b2930; --text:#f1eef3; --muted:#aaa4ad; --faint:#77717b; --line:#38353d; --grid:#2c2a31;
+    --accent:#a9a2ff; --accent-bg:#2e2b4d;
+    --fert:#f07a60; --fert-bg:#4a2620; --rel:#e9b34c; --rel-bg:#463717; --inf:#4cc3a8; --inf-bg:#173d35; --none:#6f6a74; --none-bg:#2a282e;
+    --danger:#ff8a80; --danger-bg:#4a1f1d; --warn:#f2c46b; --warn-bg:#43351a; --info:#b8c6e0; --info-bg:#263042;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 12px)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(env(safe-area-inset-top) + 10px) 16px 8px;border-bottom:1px solid var(--line)}
+header h1{font-size:20px;margin:0;font-weight:650;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+header .sub{font-size:13px;color:var(--muted);font-weight:400}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;border:1px solid var(--line)}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px;font-weight:600}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row > label{flex:1 1 120px}
+label.f{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input[type=text],input[type=time],select,textarea{width:100%;font:inherit;font-size:17px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:70px;resize:vertical}
+.temp-in{font-size:28px !important;font-variant-numeric:tabular-nums;font-weight:600;text-align:center;letter-spacing:.02em}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 auto;min-height:42px;font:inherit;font-size:14px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;line-height:1.2}
+.seg button small{display:block;font-size:11.5px;color:var(--muted)}
+.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg button.on small{color:rgba(255,255,255,.85)}
+@media (prefers-color-scheme: dark){.seg button.on{color:#151417}.seg button.on small{color:rgba(21,20,23,.8)}}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:15px}
+.chk input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.btn{font:inherit;font-size:15px;border-radius:10px;padding:10px 14px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){.btn.primary{color:#151417}}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.small{padding:6px 10px;font-size:13px}
+.iconbtn{font:inherit;font-size:22px;line-height:1;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+.datebar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.datebar .d{flex:1;text-align:center;font-weight:600}
+.datebar .d small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.status{border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;border:1px solid transparent}
+.status .big{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.status .why{font-size:14px;margin-top:4px;opacity:.92}
+.s-fert{background:var(--fert-bg);color:var(--fert);border-color:var(--fert)}
+.s-rel,.s-relPending{background:var(--rel-bg);color:var(--warn);border-color:var(--rel)}
+.s-inf,.s-infEve{background:var(--inf-bg);color:var(--inf);border-color:var(--inf)}
+.s-none{background:var(--none-bg);color:var(--muted);border-color:var(--none)}
+.hint{border-radius:10px;padding:10px 12px;font-size:14px;margin:8px 0;border-left:4px solid}
+.hint.info{background:var(--info-bg);border-color:var(--info);color:var(--text)}
+.hint.warn{background:var(--warn-bg);border-color:var(--rel);color:var(--text)}
+.hint.danger{background:var(--danger-bg);border-color:var(--danger);color:var(--text)}
+.badge{display:inline-block;border-radius:8px;padding:2px 8px;font-weight:700;font-size:14px;background:var(--accent-bg);color:var(--accent)}
+.muted{color:var(--muted)} .small{font-size:13px}
+details summary{cursor:pointer;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:" ▸"} details[open] summary::after{content:" ▾"}
+.chartwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px}
+.chartwrap svg{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{font-size:13px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.chip b{font-weight:650}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .h{font-size:12px;color:var(--muted);text-align:center;padding-bottom:2px}
+.cal .c{min-height:64px;border-radius:9px;padding:3px 4px;font-size:10.5px;line-height:1.25;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;border:1px solid var(--line);background:var(--card);overflow:hidden;position:relative}
+.cal .c .n{font-weight:650;font-size:13.5px}
+.cal .c.today{outline:2px solid var(--accent);outline-offset:1px}
+.cal .c.fert{background:var(--fert-bg);border-color:transparent}
+.cal .c.rel,.cal .c.relPending{background:var(--rel-bg);border-color:transparent}
+.cal .c.inf{background:var(--inf-bg);border-color:transparent}
+.cal .c.infEve{background:linear-gradient(90deg,var(--fert-bg) 50%,var(--inf-bg) 50%);border-color:transparent}
+.cal .c.out{opacity:.35}
+.cal .bl{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--fert)}
+.cal .t{font-variant-numeric:tabular-nums;color:var(--muted)}
+.strip{display:grid;grid-template-columns:48px 1fr;gap:3px 6px;align-items:center;font-size:12px}
+.strip .cells{display:grid;grid-template-columns:repeat(31,1fr);gap:1.5px}
+.strip .cells span{height:12px;border-radius:2px;background:var(--grid)}
+.strip .cells span.fert{background:var(--fert)} .strip .cells span.rel,.strip .cells span.relPending{background:var(--rel)}
+.strip .cells span.inf,.strip .cells span.infEve{background:var(--inf)} .strip .cells span.na{background:transparent}
+.strip .cells span.bleed{box-shadow:inset 0 0 0 2px var(--danger)}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{color:var(--muted);font-weight:600;font-size:12px}
+table.t tr[data-act]{cursor:pointer}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;height:var(--tab-h);background:none;border:0;font:inherit;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+nav.tabs button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button.on{color:var(--accent)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 12px);z-index:20;background:var(--text);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:opacity .25s;max-width:560px;margin:0 auto}
+.demo{background:var(--accent-bg);color:var(--accent);border-radius:10px;padding:8px 12px;font-size:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.prose p{margin:.5em 0} .prose ul{padding-left:1.2em;margin:.4em 0} .prose li{margin:.25em 0}
+.prose h3{font-size:15px;margin:1em 0 .3em}
+.sep{height:1px;background:var(--line);margin:12px 0}
+</style>
+</head>
+<body>
+<header><h1><span>Zyklus</span><span class="sub" id="hdrsub"></span></h1></header>
+<main id="app"></main>
+<nav class="tabs" id="tabs">
+  <button data-act="tab" data-tab="heute"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.5"/></svg>Heute</button>
+  <button data-act="tab" data-tab="zyklus"><svg viewBox="0 0 24 24"><path d="M3 19h18M4 15l3-2 3 1 3-6 3 2 4-3"/></svg>Zyklusblatt</button>
+  <button data-act="tab" data-tab="kalender"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Kalender</button>
+  <button data-act="tab" data-tab="jahr"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>12 Monate</button>
+  <button data-act="tab" data-tab="mehr"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Mehr</button>
+</nav>
+<input type="file" id="importfile" accept="application/json,.json" style="display:none">
+<script src="nfp.js"></script>
+<script>
+(function(){
+'use strict';
+const N = window.NFP;
+const KEY = 'zyklus.v1';
+const ORTE = { mund: 'Mund', vag: 'Scheide', rek: 'After' };
+const BLUT = ['keine', 'Schmier', 'schwach', 'mittel', 'stark'];
+
+let data = load();
+let demo = null;            // Demodaten (nur im Speicher)
+let state = { tab: 'heute', date: N.todayStr(), cycleIdx: null, month: N.todayStr().slice(0, 7) };
+let results = [];
+
+function D() { return demo || data; }
+function emptyData() { return { version: 1, settings: { ort: 'mund', messzeit: '06:30', streng: false, lastExport: null }, days: {} }; }
+function load() {
+  try {
+    const s = localStorage.getItem(KEY);
+    if (!s) return emptyData();
+    const d = JSON.parse(s);
+    if (!d || typeof d !== 'object' || !d.days) return emptyData();
+    d.settings = Object.assign(emptyData().settings, d.settings || {});
+    return d;
+  } catch (e) { return emptyData(); }
+}
+function save() {
+  if (demo) return;
+  try { localStorage.setItem(KEY, JSON.stringify(data)); }
+  catch (e) { toast('Speichern fehlgeschlagen: ' + e.message, 6000); }
+}
+function today() { return N.todayStr(); }
+function evaluate() { const d = D(); results = N.evaluateAll(d, d.settings, today()); }
+
+// ---------- Helfer ----------
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function dObj(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function fmtLong(s) { return dObj(s).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }); }
+function fmtShort(s) { return dObj(s).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }); }
+function fmtFull(s) { return dObj(s).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+function fmtTemp(v) { return v == null ? '' : Number(v).toFixed(2).replace('.', ','); }
+function getDay(date) { return D().days[date] || {}; }
+function setDay(date, patch) {
+  const days = D().days;
+  const cur = Object.assign({}, days[date] || {}, patch);
+  Object.keys(cur).forEach(k => { if (cur[k] === null || cur[k] === '' || cur[k] === false || cur[k] === undefined) delete cur[k]; });
+  if (Object.keys(cur).length) days[date] = cur; else delete days[date];
+  save(); evaluate();
+}
+let toastTimer;
+function toast(msg, ms) {
+  let t = document.querySelector('.toast');
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, ms || 3200);
+}
+function seg(field, opts, val) {
+  return '<div class="seg">' + opts.map(o => `<button type="button" data-act="seg" data-field="${field}" data-val="${esc(o[0])}" class="${String(val) === String(o[0]) ? 'on' : ''}">${o[1]}${o[2] ? '<small>' + o[2] + '</small>' : ''}</button>`).join('') + '</div>';
+}
+function hintsHtml(hs) { return hs.map(h => `<div class="hint ${h.level}">${esc(h.text)}</div>`).join(''); }
+function statusText(st, isToday) {
+  if (st === 'infEve' && isToday) return 'Unfruchtbar ab heute Abend';
+  return N.STATUS_TEXT[st] || 'Fruchtbar';
+}
+
+// ---------- Ansicht: Heute / Eintrag ----------
+function renderToday() {
+  const date = state.date, day = getDay(date), isToday = date === today();
+  const s = N.statusForDate(results, date);
+  let html = '';
+  html += `<div class="datebar"><button class="iconbtn" data-act="day" data-d="-1" aria-label="Vortag">‹</button>
+    <div class="d">${esc(fmtLong(date))}<small>${s ? 'Zyklustag ' + s.cd + ' · Zyklus ' + (s.cycle.index + 1) : 'kein Zyklus zugeordnet'}${isToday ? ' · heute' : ''}</small></div>
+    <button class="iconbtn" data-act="day" data-d="1" aria-label="Folgetag" ${date >= today() ? 'disabled style="opacity:.3"' : ''}>›</button></div>`;
+  if (!isToday) html += `<div style="text-align:center;margin:-4px 0 12px"><button class="btn small" data-act="gotoday">Zu heute</button></div>`;
+
+  // Status
+  if (s) {
+    const st = s.status, r = s.cycle;
+    let why = '';
+    if (st === 'rel' || st === 'relPending') why = r.relReason;
+    else if (st === 'inf' || st === 'infEve') why = `Doppelte Kontrolle erfüllt: Temperatur (${N.RULE_TEXT[r.T.rule].split(':')[0]}, 3. höherer Wert ZT ${r.T.completeIdx + 1}) und Schleimhöhepunkt ZT ${r.peak + 1} + 3 Tage. Gilt bis zur nächsten Blutung.`;
+    else {
+      why = 'Fruchtbar, bis Temperaturanstieg und Schleimhöhepunkt die unfruchtbare Zeit bestätigen.';
+      if (s.i < r.lastRel && r.relBreak) why = r.relBreak;
+      if (r.relRule === 'vorsicht' || r.relRule === 'streng') { if (s.i < 5) why = r.relReason; }
+    }
+    html += `<div class="status s-${st}"><div class="big">${esc(statusText(st, isToday))}</div><div class="why">${esc(why)}</div></div>`;
+  } else {
+    html += `<div class="status s-none"><div class="big">Noch keine Auswertung</div><div class="why">${results.length ? 'Dieser Tag liegt vor dem ersten aufgezeichneten Zyklus.' : 'Trage am 1. Tag der nächsten Regelblutung die Blutung ein – dann beginnt der erste Zyklus. Bis dahin alle Tage als fruchtbar werten.'}</div></div>`;
+  }
+  // Wichtige Hinweise des Zyklus nur für den aktuellen Tag
+  if (s && isToday) html += hintsHtml(s.cycle.hints.filter(h => h.level !== 'info' || /höhere Messung am ZT/.test(h.text)));
+
+  // Backup-Erinnerung
+  const d = D();
+  if (!demo && Object.keys(d.days).length > 10) {
+    const le = d.settings.lastExport;
+    if (!le || N.diffDays(le, today()) > 30) html += `<div class="hint warn">Letzte Datensicherung: ${le ? fmtFull(le) : 'noch nie'}. Daten liegen nur auf diesem Gerät. <button class="btn small" data-act="export" style="margin-left:6px">Jetzt sichern</button></div>`;
+  }
+
+  // Temperatur
+  const ort = day.ort || d.settings.ort;
+  html += `<div class="card"><h2>Aufwachtemperatur</h2>
+    <input class="temp-in" type="text" inputmode="decimal" placeholder="36,50" data-field="temp" value="${esc(fmtTemp(day.temp))}" aria-label="Temperatur in Grad Celsius">
+    <div class="row" style="margin-top:10px">
+      <label><span class="f">Messzeit</span><input type="time" data-field="zeit" value="${esc(day.zeit || '')}"></label>
+      <label><span class="f">Messort</span><select data-field="ort">${Object.entries(ORTE).map(([k, v]) => `<option value="${k}" ${k === ort ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    </div>
+    <label class="chk"><input type="checkbox" data-field="stoerung" ${day.stoerung ? 'checked' : ''}> Störung – Wert ausklammern</label>
+    ${day.stoerung ? `<input type="text" data-field="stoergrund" placeholder="Grund, z. B. Alkohol, Infekt, kurzer Schlaf, Reise" value="${esc(day.stoergrund || '')}">` : ''}
+    <div class="small muted" style="margin-top:6px">Vor dem Aufstehen messen, immer am gleichen Ort und möglichst zur gleichen Zeit. Ausgeklammerte Werte zählen bei der Auswertung nicht mit.</div>
+  </div>`;
+
+  // Schleim
+  const q = N.mucusCat(day);
+  html += `<div class="card"><h2>Zervixschleim <span style="float:right">${q != null ? '<span class="badge">' + N.Q_LABEL[q] + '</span>' : ''}</span></h2>
+    <label class="f">Gefühl am Scheideneingang</label>
+    ${seg('gefuehl', [['t', 'trocken', 'rau, juckend'], ['o', 'nichts', 'kein Gefühl'], ['f', 'feucht', ''], ['n', 'nass', 'rutschig, glitschig']], day.gefuehl)}
+    <label class="f" style="margin-top:10px">Aussehen</label>
+    ${seg('aussehen', [['none', 'nichts', 'gesehen'], ['S', 'dicklich', 'weißlich, klebrig'], ['S+', 'glasig', 'spinnbar, wie Eiklar']], day.aussehen)}
+    <div class="small muted" style="margin-top:8px">${q != null ? esc(N.Q_TEXT[q]) + '. ' : ''}Abends die <b>beste</b> Qualität des Tages eintragen. Gefühl und Aussehen ergeben zusammen die höchste Kategorie.${(day.gefuehl && !day.aussehen) || (!day.gefuehl && day.aussehen) ? ' <b>Bitte beides eintragen.</b>' : ''}</div>
+  </div>`;
+
+  // Blutung
+  html += `<div class="card"><h2>Blutung</h2>
+    ${seg('blutung', BLUT.map((b, i) => [i, b]), day.blutung || 0)}
+    <label class="chk"><input type="checkbox" data-field="zyklusstart" ${day.zyklusstart ? 'checked' : ''}> 1. Zyklustag (Beginn der Regelblutung)</label>
+    <label class="chk"><input type="checkbox" data-field="zwischenblutung" ${day.zwischenblutung ? 'checked' : ''}> Zwischen- oder Schmierblutung außerhalb der Regel</label>
+    <div class="small muted">Ein neuer Zyklus beginnt mit dem ersten Tag einer echten Blutung (nicht mit einer Schmierblutung).</div>
+  </div>`;
+
+  // Verkehr
+  html += `<div class="card"><h2>Verkehr</h2>
+    ${seg('verkehr', [['', 'keiner'], ['g', 'geschützt', 'Kondom o. ä.'], ['u', 'ungeschützt', '']], day.verkehr || '')}
+    ${day.verkehr === 'u' && s && (s.status === 'fert' || s.status === 'relPending') ? '<div class="hint danger">Ungeschützter Verkehr an einem fruchtbaren Tag. Soll eine Schwangerschaft vermieden werden: Notfallverhütung („Pille danach“) wirkt nur zeitnah – möglichst sofort Apotheke oder Ärztin fragen.</div>' : ''}
+    ${s && (s.status === 'rel' || s.status === 'relPending') ? '<div class="small muted" style="margin-top:6px">Relativ unfruchtbare Tage: Verkehr am besten abends, nachdem den ganzen Tag kein Schleim bemerkt wurde. Samenflüssigkeit kann am Folgetag Schleim vortäuschen – im Zweifel als Schleim werten.</div>' : ''}
+  </div>`;
+
+  // Weitere Zeichen
+  html += `<div class="card"><h2>Weitere Zeichen</h2>
+    <label class="f">Mittelschmerz</label>
+    ${seg('mittelschmerz', [['', 'keiner'], ['l', 'links'], ['r', 'rechts'], ['b', 'beidseits']], day.mittelschmerz || '')}
+    <label class="chk"><input type="checkbox" data-field="brust" ${day.brust ? 'checked' : ''}> Brustspannen</label>
+    <details ${day.mmLage || day.mmFest || day.mmOff ? 'open' : ''} style="margin-top:6px"><summary>Muttermund (optional)</summary>
+      <div style="margin-top:8px"><label class="f">Lage</label>${seg('mmLage', [['tief', 'tief'], ['mittel', 'mittel'], ['hoch', 'hoch']], day.mmLage)}</div>
+      <div style="margin-top:8px"><label class="f">Festigkeit</label>${seg('mmFest', [['fest', 'fest', 'wie Nasenspitze'], ['weich', 'weich', 'wie Lippen']], day.mmFest)}</div>
+      <div style="margin-top:8px"><label class="f">Öffnung</label>${seg('mmOff', [['zu', 'geschlossen'], ['leicht', 'leicht offen'], ['offen', 'offen']], day.mmOff)}</div>
+      <div class="small muted" style="margin-top:6px">Nur Zusatzinformation – fließt nicht in die Auswertung ein.</div>
+    </details>
+  </div>`;
+
+  html += `<div class="card"><h2>Notiz</h2><textarea data-field="notiz" placeholder="z. B. Stress, Reise, Medikamente">${esc(day.notiz || '')}</textarea>
+    ${Object.keys(day).length ? '<div style="margin-top:10px"><button class="btn small danger" data-act="clearday">Eintrag dieses Tages löschen</button></div>' : ''}</div>`;
+  return html;
+}
+
+// ---------- Ansicht: Zyklusblatt ----------
+function buildChart(r) {
+  const n = r.length, colW = 26, padL = 0, LW = 62, top = 22, chartH = 210;
+  const rowsLbl = ['ZT', 'Datum', 'Schleim', 'Höhepunkt', 'Blutung', 'Verkehr', 'Mittelschm.', 'Brust', 'Phase'];
+  const rowH = 19, tableTop = top + chartH + 14;
+  const W = padL + n * colW + 40, H = tableTop + rowsLbl.length * rowH + 8;
+  const temps = r.rows.map(x => N.tempH(x.day)).filter(v => v != null);
+  let lo = temps.length ? Math.min(...temps) - 10 : 3620, hi = temps.length ? Math.max(...temps) + 10 : 3700;
+  if (r.T) hi = Math.max(hi, r.T.line + 30);
+  lo = Math.floor(lo / 5) * 5; hi = Math.ceil(hi / 5) * 5;
+  while (hi - lo < 80) { lo -= 5; if (hi - lo < 80) hi += 5; }
+  const y = v => top + (hi - v) / (hi - lo) * chartH;
+  const x = i => padL + i * colW + colW / 2;
+  const cs = getComputedStyle(document.documentElement);
+  const C = k => cs.getPropertyValue(k).trim();
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="-apple-system,system-ui,sans-serif" role="img" aria-label="Temperaturkurve Zyklus ${r.index + 1}">`;
+  let lab = `<svg width="${LW}" height="${H}" viewBox="0 0 ${LW} ${H}" font-family="-apple-system,system-ui,sans-serif" aria-hidden="true">`;
+  // Hintergrund Phasen im Diagramm
+  r.status.forEach((st, i) => {
+    const col = st === 'fert' ? C('--fert-bg') : (st === 'rel' || st === 'relPending') ? C('--rel-bg') : (st === 'inf') ? C('--inf-bg') : null;
+    if (st === 'infEve') { s += `<rect x="${padL + i * colW}" y="${top}" width="${colW / 2}" height="${chartH}" fill="${C('--fert-bg')}" opacity=".55"/><rect x="${padL + i * colW + colW / 2}" y="${top}" width="${colW / 2}" height="${chartH}" fill="${C('--inf-bg')}" opacity=".55"/>`; }
+    else if (col) s += `<rect x="${padL + i * colW}" y="${top}" width="${colW}" height="${chartH}" fill="${col}" opacity=".55"/>`;
+  });
+  // 6 tiefe Werte markieren
+  const TT = r.T || r.tempPending;
+  if (TT) TT.lowIdx.forEach(i => { s += `<rect x="${padL + i * colW + 2}" y="${top}" width="${colW - 4}" height="${chartH}" fill="${C('--accent')}" opacity=".08"/>`; });
+  // Gitter
+  for (let v = lo; v <= hi; v += 5) {
+    const major = v % 10 === 0;
+    s += `<line x1="${padL}" x2="${padL + n * colW}" y1="${y(v)}" y2="${y(v)}" stroke="${C('--grid')}" stroke-width="${major ? 1 : .5}"/>`;
+    if (major) lab += `<text x="${LW - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="${C('--muted')}">${(v / 100).toFixed(1).replace('.', ',')}</text>`;
+  }
+  for (let i = 0; i <= n; i++) s += `<line x1="${padL + i * colW}" x2="${padL + i * colW}" y1="${top}" y2="${top + chartH}" stroke="${C('--grid')}" stroke-width=".5"/>`;
+  // heute
+  const ti = r.rows.findIndex(rr => rr.date === today());
+  if (ti >= 0) s += `<rect x="${padL + ti * colW + 1}" y="${top - 2}" width="${colW - 2}" height="${H - top - 4}" fill="none" stroke="${C('--accent')}" stroke-width="1.2" rx="4"/>`;
+  // Hilfslinie
+  if (TT) {
+    const x0 = padL + TT.lowIdx[0] * colW, x1 = padL + n * colW;
+    s += `<line x1="${x0}" x2="${x1}" y1="${y(TT.line)}" y2="${y(TT.line)}" stroke="${C('--accent')}" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+    s += `<text x="${x1 + 3}" y="${y(TT.line) + 4}" font-size="10.5" fill="${C('--accent')}">HL</text>`;
+    const xe = padL + TT.ehmIdx * colW;
+    s += `<line x1="${xe}" x2="${x1}" y1="${y(TT.line + 20)}" y2="${y(TT.line + 20)}" stroke="${C('--accent')}" stroke-width=".8" stroke-dasharray="2 3" opacity=".8"/>`;
+    s += `<text x="${x1 + 3}" y="${y(TT.line + 20) + 4}" font-size="10.5" fill="${C('--accent')}">+0,2</text>`;
+  }
+  // Kurve
+  let prev = null, path = '';
+  r.rows.forEach((rr, i) => {
+    const t = N.tempH(rr.day);
+    if (t == null) { prev = null; return; }
+    if (N.isExcluded(rr.day)) return;
+    path += (prev == null ? 'M' : 'L') + x(i) + ' ' + y(t) + ' ';
+    prev = i;
+  });
+  s += `<path d="${path}" fill="none" stroke="${C('--text')}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  r.rows.forEach((rr, i) => {
+    const t = N.tempH(rr.day);
+    if (t == null) return;
+    if (N.isExcluded(rr.day)) s += `<circle cx="${x(i)}" cy="${y(t)}" r="4" fill="${C('--card')}" stroke="${C('--faint')}" stroke-width="1.5"/><text x="${x(i)}" y="${y(t) - 8}" font-size="10" text-anchor="middle" fill="${C('--faint')}">( )</text>`;
+    else s += `<circle cx="${x(i)}" cy="${y(t)}" r="3.6" fill="${C('--text')}"/>`;
+  });
+  if (TT) {
+    TT.highIdx.forEach((i, k) => { const t = N.tempH(r.rows[i].day); s += `<text x="${x(i)}" y="${y(t) - 9}" font-size="11" font-weight="700" text-anchor="middle" fill="${C('--accent')}">${k + 1}</text>`; });
+    TT.lowIdx.forEach((i, k) => { const t = N.tempH(r.rows[i].day); s += `<text x="${x(i)}" y="${y(t) + 15}" font-size="9.5" text-anchor="middle" fill="${C('--muted')}">${6 - k}</text>`; });
+    if (TT.dropIdx != null) { const t = N.tempH(r.rows[TT.dropIdx].day); s += `<text x="${x(TT.dropIdx)}" y="${y(t) + 16}" font-size="11" text-anchor="middle" fill="${C('--warn')}">×</text>`; }
+  }
+  // Tabelle
+  rowsLbl.forEach((l, k) => {
+    const yy = tableTop + k * rowH;
+    lab += `<text x="0" y="${yy + 13}" font-size="11" fill="${C('--muted')}">${l}</text><line x1="0" x2="${LW}" y1="${yy}" y2="${yy}" stroke="${C('--grid')}" stroke-width=".5"/>`;
+    s += `<line x1="0" x2="${padL + n * colW}" y1="${yy}" y2="${yy}" stroke="${C('--grid')}" stroke-width=".5"/>`;
+  });
+  const peak = r.peak, peakShown = r.mucusDoneIdx != null || r.infStart != null;
+  r.rows.forEach((rr, i) => {
+    const cx = x(i), d = rr.day || {}, yy = k => tableTop + k * rowH + 13;
+    s += `<text x="${cx}" y="${yy(0)}" font-size="11" text-anchor="middle" fill="${C('--text')}" font-weight="${i === ti ? 700 : 400}">${i + 1}</text>`;
+    s += `<text x="${cx}" y="${yy(1)}" font-size="9.5" text-anchor="middle" fill="${C('--muted')}">${dObj(rr.date).getDate()}.</text>`;
+    const q = r.q[i];
+    if (q != null) s += `<text x="${cx}" y="${yy(2)}" font-size="11" text-anchor="middle" font-weight="${q >= 3 ? 700 : 400}" fill="${q === 4 ? C('--fert') : C('--text')}">${N.Q_LABEL[q]}</text>`;
+    if (peak != null && peakShown) {
+      if (i === peak) s += `<text x="${cx}" y="${yy(3)}" font-size="11" font-weight="700" text-anchor="middle" fill="${C('--accent')}">H</text>`;
+      else if (i > peak && i <= peak + 3) s += `<text x="${cx}" y="${yy(3)}" font-size="11" text-anchor="middle" fill="${C('--accent')}">${i - peak}</text>`;
+    } else if (peak != null && i === peak) s += `<text x="${cx}" y="${yy(3)}" font-size="11" text-anchor="middle" fill="${C('--faint')}">H?</text>`;
+    if (d.blutung) { const rad = [0, 2, 3.5, 5, 6.5][d.blutung]; s += `<circle cx="${cx}" cy="${yy(4) - 4}" r="${rad}" fill="${C('--fert')}"/>`; }
+    if (d.zwischenblutung) s += `<text x="${cx}" y="${yy(4)}" font-size="10" text-anchor="middle" fill="${C('--fert')}">z</text>`;
+    if (d.verkehr) s += `<text x="${cx}" y="${yy(5)}" font-size="11" font-weight="700" text-anchor="middle" fill="${d.verkehr === 'u' ? C('--danger') : C('--inf')}">${d.verkehr === 'u' ? 'U' : 'G'}</text>`;
+    if (d.mittelschmerz) s += `<text x="${cx}" y="${yy(6)}" font-size="11" text-anchor="middle" fill="${C('--text')}">${d.mittelschmerz.toUpperCase()}</text>`;
+    if (d.brust) s += `<text x="${cx}" y="${yy(7)}" font-size="11" text-anchor="middle" fill="${C('--text')}">•</text>`;
+    const st = r.status[i], py = tableTop + 8 * rowH + 3;
+    const col = st === 'fert' ? C('--fert') : (st === 'rel' || st === 'relPending') ? C('--rel') : C('--inf');
+    if (st === 'infEve') s += `<rect x="${padL + i * colW + 1}" y="${py}" width="${colW / 2 - 1}" height="12" fill="${C('--fert')}" rx="2"/><rect x="${padL + i * colW + colW / 2}" y="${py}" width="${colW / 2 - 1}" height="12" fill="${C('--inf')}" rx="2"/>`;
+    else s += `<rect x="${padL + i * colW + 1}" y="${py}" width="${colW - 2}" height="12" fill="${col}" rx="2" opacity="${st === 'relPending' ? .5 : 1}"/>`;
+    s += `<rect x="${padL + i * colW}" y="0" width="${colW}" height="${H}" fill="transparent" data-act="goto" data-date="${rr.date}" style="cursor:pointer"/>`;
+  });
+  s += '</svg>'; lab += '</svg>';
+  return `<div style="display:flex;align-items:flex-start"><div style="flex:none">${lab}</div><div class="chartwrap" style="flex:1;margin:0;padding:0" data-scroll="${r.complete && r.T ? r.T.ehmIdx * colW : 'end'}">${s}</div></div>`;
+}
+
+function renderCycle() {
+  if (!results.length) return `<div class="card"><h2>Zyklusblatt</h2><p>Noch kein Zyklus vorhanden. Trage unter „Heute“ am 1. Tag der Regelblutung die Blutung ein.</p><button class="btn" data-act="startdemo">Mit Beispieldaten ausprobieren</button></div>`;
+  if (state.cycleIdx == null || state.cycleIdx >= results.length) state.cycleIdx = results.length - 1;
+  const r = results[state.cycleIdx];
+  let h = `<div class="datebar"><button class="iconbtn" data-act="cyc" data-d="-1" ${state.cycleIdx === 0 ? 'disabled style="opacity:.3"' : ''}>‹</button>
+    <div class="d">Zyklus ${r.index + 1}<small>${fmtFull(r.start)} – ${r.complete ? fmtFull(r.end) : 'läuft'} · ${r.length} Tage</small></div>
+    <button class="iconbtn" data-act="cyc" data-d="1" ${state.cycleIdx === results.length - 1 ? 'disabled style="opacity:.3"' : ''}>›</button></div>`;
+  const T = r.T, P = r.tempPending;
+  h += '<div class="chips">';
+  h += `<span class="chip">1. höhere Messung <b>${T ? 'ZT ' + T.ehmCd : P ? 'ZT ' + (P.ehmIdx + 1) + '?' : '–'}</b></span>`;
+  h += `<span class="chip">Hilfslinie <b>${T ? N.fmtT(T.line) : P ? N.fmtT(P.line) + '?' : '–'}</b></span>`;
+  h += `<span class="chip">Höhepunkt <b>${r.peak != null && (r.mucusDoneIdx != null || r.infStart != null) ? 'ZT ' + (r.peak + 1) : '–'}</b></span>`;
+  h += `<span class="chip">unfruchtbar ab <b>${r.infStart != null ? 'ZT ' + (r.infStart + 1) + ' abends' : '–'}</b></span>`;
+  if (T && r.complete) h += `<span class="chip">Hochlage <b>${r.length - T.ehmIdx} T.</b></span>`;
+  h += '</div>';
+  h += `<div class="card" style="padding-bottom:8px">${buildChart(r)}
+    <div class="legend"><span><i style="background:var(--rel)"></i>relativ unfruchtbar</span><span><i style="background:var(--fert)"></i>fruchtbar</span><span><i style="background:var(--inf)"></i>unfruchtbar</span><span>1 2 3 = höhere Werte, 6…1 = tiefe Werte, × = nicht gezählt, ( ) = ausgeklammert</span></div>
+    <div class="small muted" style="margin-top:6px">Tippe auf einen Tag, um ihn zu bearbeiten.</div></div>`;
+  h += `<div class="card"><h2>So wurde ausgewertet</h2><div class="prose small">
+    <p><b>Beginn der fruchtbaren Zeit:</b> ${esc(r.relReason)} ${r.relEnd ? 'Relativ unfruchtbar: ZT 1–' + r.relEnd + '.' : 'Keine relativ unfruchtbaren Tage.'}</p>
+    <p><b>Ende der fruchtbaren Zeit (doppelte Kontrolle, was zuletzt kommt):</b><br>
+    Temperatur: ${T ? esc(N.RULE_TEXT[T.rule]) + ` – erfüllt am ZT ${T.completeIdx + 1} (Hilfslinie ${N.fmtT(T.line)} °C über den 6 Werten von ZT ${T.lowIdx.map(i => i + 1).join(', ')}).` : 'noch nicht erfüllt.'}<br>
+    Schleim: ${r.mucusDoneIdx != null ? `Höhepunkt ZT ${r.peak + 1} (${N.Q_LABEL[r.q[r.peak]]}), danach 3 Tage schlechtere Qualität – erfüllt am ZT ${r.mucusDoneIdx + 1}.` : 'noch nicht erfüllt.'}<br>
+    ${r.infStart != null ? `<b>Unfruchtbar ab dem Abend von ZT ${r.infStart + 1}</b> bis zur nächsten Blutung.` : 'Bis beide Bedingungen erfüllt sind, gilt jeder Tag als fruchtbar.'}</p>
+    </div>${hintsHtml(r.hints)}</div>`;
+  return h;
+}
+
+// ---------- Ansicht: Kalender ----------
+function renderCalendar() {
+  const [Y, M] = state.month.split('-').map(Number);
+  const first = new Date(Y, M - 1, 1), days = new Date(Y, M, 0).getDate();
+  const offset = (first.getDay() + 6) % 7;
+  const title = first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  let h = `<div class="datebar"><button class="iconbtn" data-act="mon" data-d="-1">‹</button><div class="d">${title}</div><button class="iconbtn" data-act="mon" data-d="1">›</button></div>`;
+  h += '<div class="card"><div class="cal">' + ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<div class="h">${d}</div>`).join('');
+  for (let i = 0; i < offset; i++) h += '<div></div>';
+  const td = today();
+  for (let d = 1; d <= days; d++) {
+    const ds = `${Y}-${String(M).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const day = getDay(ds);
+    const s = ds <= td ? N.statusForDate(results, ds) : null;
+    const cls = ['c', s ? s.status : '', ds === td ? 'today' : '', ds > td ? 'out' : ''].join(' ');
+    const q = N.mucusCat(day);
+    h += `<div class="${cls}" data-act="goto" data-date="${ds}">
+      <span class="n">${d}</span>${day.blutung >= 2 ? '<span class="bl"></span>' : ''}
+      <span class="t">${day.temp != null ? (N.isExcluded(day) ? '(' + fmtTemp(day.temp) + ')' : fmtTemp(day.temp)) : ''}</span>
+      <span style="display:flex;justify-content:space-between"><b>${q != null ? N.Q_LABEL[q] : ''}</b><span style="color:${day.verkehr === 'u' ? 'var(--danger)' : 'var(--inf)'};font-weight:700">${day.verkehr === 'u' ? 'U' : day.verkehr === 'g' ? 'G' : ''}</span></span></div>`;
+  }
+  h += '</div><div class="legend"><span><i style="background:var(--rel-bg);border:1px solid var(--rel)"></i>relativ unfruchtbar</span><span><i style="background:var(--fert-bg);border:1px solid var(--fert)"></i>fruchtbar</span><span><i style="background:var(--inf-bg);border:1px solid var(--inf)"></i>unfruchtbar</span><span><i style="background:var(--fert);border-radius:50%"></i>Blutung</span><span>U/G = Verkehr ungeschützt/geschützt</span></div>';
+  h += '<div class="small muted" style="margin-top:6px">Zukünftige Tage werden nicht vorhergesagt – die Auswertung erfolgt immer erst anhand der Körperzeichen.</div></div>';
+  return h;
+}
+
+// ---------- Ansicht: 12 Monate ----------
+function renderYear() {
+  const td = today();
+  const [Y, M] = td.split('-').map(Number);
+  let h = '<div class="card"><h2>Letzte 12 Monate</h2><div class="strip">';
+  for (let k = 0; k < 12; k++) {
+    const dt = new Date(Y, M - 1 - k, 1), y = dt.getFullYear(), m = dt.getMonth() + 1, nd = new Date(y, m, 0).getDate();
+    h += `<span class="muted">${dt.toLocaleDateString('de-DE', { month: 'short' })} ${String(y).slice(2)}</span><div class="cells">`;
+    for (let d = 1; d <= 31; d++) {
+      if (d > nd) { h += '<span class="na"></span>'; continue; }
+      const ds = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const s = ds <= td ? N.statusForDate(results, ds) : null;
+      const day = getDay(ds);
+      h += `<span class="${s ? s.status : ''} ${day.blutung >= 2 ? 'bleed' : ''}" title="${ds}"></span>`;
+    }
+    h += '</div>';
+  }
+  h += '</div><div class="legend"><span><i style="background:var(--rel)"></i>relativ unfr.</span><span><i style="background:var(--fert)"></i>fruchtbar</span><span><i style="background:var(--inf)"></i>unfruchtbar</span><span><i style="box-shadow:inset 0 0 0 2px var(--danger)"></i>Blutung</span></div></div>';
+
+  const cutoff = N.addDays(td, -365);
+  const rs = results.filter(r => r.end >= cutoff);
+  const done = rs.filter(r => r.complete);
+  const evaluated = results.filter(r => r.T);
+  const recent = evaluated.slice(-12);
+  const minEhm = recent.length ? Math.min(...recent.map(r => r.T.ehmCd)) : null;
+  const lens = done.map(r => r.length);
+  const avg = lens.length ? (lens.reduce((a, b) => a + b, 0) / lens.length).toFixed(1).replace('.', ',') : '–';
+  const cur = results[results.length - 1];
+  h += `<div class="card"><h2>Kennzahlen</h2><div class="chips">
+    <span class="chip">Zyklen (12 Mon.) <b>${rs.length}</b></span>
+    <span class="chip">Ø Länge <b>${avg}</b></span>
+    <span class="chip">kürzester / längster <b>${lens.length ? Math.min(...lens) + ' / ' + Math.max(...lens) : '–'}</b></span>
+    <span class="chip">ausgewertete Zyklen <b>${evaluated.length}${evaluated.length < 12 ? ' / 12' : ''}</b></span>
+    <span class="chip">früheste 1. höhere Messung <b>${minEhm ? 'ZT ' + minEhm : '–'}</b></span>
+    <span class="chip">Minus-8-Wert <b>${minEhm ? 'ZT ' + (minEhm - 8) : '–'}</b></span></div>
+    <div class="small">${cur ? '<b>Aktuell gilt:</b> ' + esc(cur.relReason) : ''}</div></div>`;
+
+  if (done.length) {
+    const bw = 22, gap = 8, maxL = Math.max(40, ...lens), chH = 120, W = done.length * (bw + gap) + 34;
+    let svg = `<svg width="${W}" height="${chH + 34}" font-family="-apple-system,system-ui,sans-serif">`;
+    const yy = v => 8 + chH - v / maxL * chH;
+    [24, 38].forEach(v => { svg += `<line x1="26" x2="${W}" y1="${yy(v)}" y2="${yy(v)}" style="stroke:var(--line)" stroke-dasharray="3 3"/><text x="22" y="${yy(v) + 4}" font-size="10" text-anchor="end" style="fill:var(--muted)">${v}</text>`; });
+    done.forEach((r, i) => {
+      const x = 30 + i * (bw + gap), lp = r.T ? r.length - r.T.ehmIdx : 0, fp = r.length - lp;
+      svg += `<rect x="${x}" y="${yy(r.length)}" width="${bw}" height="${fp / maxL * chH}" style="fill:var(--rel)" rx="3"/>`;
+      if (lp) svg += `<rect x="${x}" y="${yy(lp)}" width="${bw}" height="${lp / maxL * chH}" style="fill:var(--inf)" rx="3"/>`;
+      svg += `<text x="${x + bw / 2}" y="${yy(r.length) - 4}" font-size="10" text-anchor="middle" style="fill:var(--text)">${r.length}</text>`;
+      svg += `<text x="${x + bw / 2}" y="${chH + 24}" font-size="10" text-anchor="middle" style="fill:var(--muted)">${fmtShort(r.start).slice(3)}</text>`;
+    });
+    svg += '</svg>';
+    h += `<div class="card"><h2>Zykluslängen</h2><div class="scrollx">${svg}</div><div class="legend"><span><i style="background:var(--rel)"></i>Tieflage (bis 1. höhere Messung)</span><span><i style="background:var(--inf)"></i>Hochlage</span><span>gestrichelt: üblicher Bereich 24–38 Tage</span></div></div>`;
+  }
+
+  h += '<div class="card"><h2>Zyklen</h2><div class="scrollx"><table class="t"><tr><th>Beginn</th><th>Länge</th><th>1. höh. M.</th><th>Höhepkt.</th><th>unfr. ab</th><th>Hochlage</th><th>Beginn-Regel</th></tr>';
+  const RR = { '5tage': '5 Tage', minus8: 'Minus 8', vorsicht: 'keine', streng: 'streng' };
+  rs.slice().reverse().forEach(r => {
+    h += `<tr data-act="opencycle" data-i="${r.index}"><td>${fmtFull(r.start)}</td><td>${r.complete ? r.length : r.length + '…'}</td><td>${r.T ? r.T.ehmCd : '–'}</td><td>${r.mucusDoneIdx != null || r.infStart != null ? r.peak + 1 : '–'}</td><td>${r.infStart != null ? r.infStart + 1 : '–'}</td><td>${r.T && r.complete ? r.length - r.T.ehmIdx : '–'}</td><td>${RR[r.relRule] || ''}</td></tr>`;
+  });
+  h += '</table></div>' + (rs.length ? '<div class="small muted" style="margin-top:6px">Angaben in Zyklustagen. Tippe auf einen Zyklus für das Zyklusblatt.</div>' : '<p class="muted">Noch keine Zyklen.</p>') + '</div>';
+  return h;
+}
+
+// ---------- Ansicht: Mehr ----------
+function renderMore() {
+  const S = D().settings;
+  const n = Object.keys(D().days).length;
+  return `<div class="card"><h2>Einstellungen</h2>
+    <div class="row"><label><span class="f">Standard-Messort</span><select data-setting="ort">${Object.entries(ORTE).map(([k, v]) => `<option value="${k}" ${k === S.ort ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+    <label><span class="f">Übliche Messzeit</span><input type="time" data-setting="messzeit" value="${esc(S.messzeit || '')}"></label></div>
+    <label class="chk"><input type="checkbox" data-setting="streng" ${S.streng ? 'checked' : ''}> Strenger Modus: nur die Zeit nach dem Eisprung als unfruchtbar werten</label>
+    <div class="small muted">Ohne strengen Modus gelten zu Zyklusbeginn nach 5-Tage- bzw. Minus-8-Regel einige Tage als „relativ unfruchtbar“ (kleines Restrisiko). Mit strengem Modus entfällt diese Phase.</div></div>
+
+  <div class="card"><h2>Datensicherung</h2>
+    <p class="small">Alle Daten liegen nur auf diesem Gerät (${n} Tageseinträge). Wird die App vom Home-Bildschirm gelöscht, sind sie weg. Sichere regelmäßig eine Kopie, z. B. in „Dateien“ → iCloud Drive.</p>
+    <p class="small muted">Letzte Sicherung: ${S.lastExport ? fmtFull(S.lastExport) : 'noch nie'}</p>
+    <div class="row"><button class="btn primary" data-act="export">Daten sichern (Export)</button><button class="btn" data-act="import">Sicherung laden (Import)</button></div></div>
+
+  <div class="card"><h2>Ausprobieren</h2>
+    <p class="small">Lädt Beispielzyklen nur zum Anschauen. Deine Daten bleiben unverändert, im Demo-Modus wird nichts gespeichert.</p>
+    <button class="btn" data-act="${demo ? 'stopdemo' : 'startdemo'}">${demo ? 'Demo beenden' : 'Demo mit Beispieldaten starten'}</button></div>
+
+  <div class="card prose"><h2>Regeln in dieser App</h2>
+    <h3>Ende der fruchtbaren Zeit (Sensiplan, doppelte Kontrolle)</h3>
+    <ul><li><b>Temperatur:</b> 3 aufeinanderfolgende Werte höher als die 6 vorangehenden. Hilfslinie auf dem höchsten der 6 Werte; der 3. höhere Wert mindestens 0,2 °C darüber. Ausgeklammerte Werte werden übersprungen.</li>
+    <li><b>1. Ausnahmeregel:</b> Liegt der 3. Wert weniger als 0,2 °C über der Linie, muss ein 4. Wert über der Linie liegen.</li>
+    <li><b>2. Ausnahmeregel:</b> Fällt einer der höheren Werte auf/unter die Linie, wird er nicht gezählt; der 3. gezählte Wert muss mindestens 0,2 °C darüber liegen. Beide Ausnahmen dürfen nicht kombiniert werden.</li>
+    <li><b>Schleim:</b> Höhepunkt = letzter Tag der besten Qualität; danach 3 Tage mit schlechterer Qualität.</li>
+    <li>Unfruchtbar ab dem Abend des Tages, an dem <b>beide</b> Bedingungen erfüllt sind – bis zur nächsten Blutung.</li></ul>
+    <h3>Beginn der fruchtbaren Zeit</h3>
+    <ul><li><b>5-Tage-Regel</b> (bis 12 ausgewertete Zyklen): ZT 1–5 relativ unfruchtbar.</li>
+    <li><b>Minus-8-Regel</b> (ab 12 Zyklen, oder früher, wenn sie einen früheren Tag ergibt): früheste 1. höhere Messung der letzten 12 Zyklen minus 8.</li>
+    <li>Sobald Schleim oder Feuchtigkeit auftritt, beginnt die fruchtbare Zeit sofort.</li></ul>
+    <h3>Zusätzliche App-Vorsichtsregeln</h3>
+    <ul><li>Erster aufgezeichneter Zyklus und Zyklen nach einem Vorzyklus ohne bestätigten Temperaturanstieg: keine relativ unfruchtbaren Tage.</li>
+    <li>Tag ohne Schleimeintrag (außer bei Blutung) beendet die relativ unfruchtbare Phase.</li>
+    <li>Nach dem Höhepunkt müssen die 3 Tage lückenlos eingetragen sein.</li>
+    <li>Messortwechsel im Auswertungsbereich: keine Temperaturauswertung.</li></ul>
+    <h3>Wichtig</h3>
+    <p class="small">Diese App ist ein Hilfsmittel zum Aufzeichnen und kein geprüftes Medizinprodukt. Sie ersetzt nicht das Erlernen der Methode (Standardwerk: „Natürlich &amp; sicher – Das Praxisbuch“, Arbeitsgruppe NFP) und keine Beratung. Prüfe jede Auswertung selbst nach. Zuverlässig ist die Methode nur bei konsequenter Anwendung; vor sexuell übertragbaren Infektionen schützt sie nicht.</p></div>
+
+  <div class="card"><h2>Alle Daten löschen</h2><button class="btn danger" data-act="wipe">Alle Daten auf diesem Gerät löschen</button></div>`;
+}
+
+// ---------- Demo ----------
+function makeDemo() {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const d = emptyData(); d.settings.messzeit = '06:30';
+  const lens = [29, 27, 31, 28, 30, 26, 29, 32, 28, 29, 27, 30, 28];
+  const totalLen = lens.reduce((a, b) => a + b, 0);
+  let start = N.addDays(today(), -(totalLen + 9));
+  lens.concat([40]).forEach((L, k) => {
+    const ehm = L - 13 + Math.round(rnd() * 2 - 1), peak = ehm - 1 + Math.round(rnd() * 2 - 1);
+    for (let i = 0; i < L; i++) {
+      const date = N.addDays(start, i); if (date > today()) break;
+      const cd = i + 1, day = {};
+      if (cd === 1) day.zyklusstart = true;
+      if (cd <= 5) day.blutung = [4, 3, 3, 2, 1][cd - 1];
+      const base = cd < ehm ? 36.42 : 36.78;
+      day.temp = Math.round((base + (rnd() - .5) * .16) * 100) / 100;
+      day.zeit = rnd() > .93 ? '08:15' : '06:' + String(20 + Math.round(rnd() * 20));
+      if (rnd() > .96) { day.temp = Math.round((day.temp + .3) * 100) / 100; day.stoerung = true; day.stoergrund = 'Alkohol am Vorabend'; }
+      if (cd > 4) {
+        if (cd < peak - 5) { day.gefuehl = 't'; day.aussehen = 'none'; }
+        else if (cd < peak - 2) { day.gefuehl = 'f'; day.aussehen = rnd() > .4 ? 'S' : 'none'; }
+        else if (cd <= peak) { day.gefuehl = 'n'; day.aussehen = 'S+'; }
+        else if (cd <= peak + 4) { day.gefuehl = 'f'; day.aussehen = 'S'; }
+        else { day.gefuehl = 't'; day.aussehen = 'none'; }
+      }
+      if (cd === peak || cd === peak + 1) if (rnd() > .5) day.mittelschmerz = rnd() > .5 ? 'l' : 'r';
+      if (cd > ehm + 7 && rnd() > .6) day.brust = true;
+      if (rnd() > .82) day.verkehr = cd > ehm + 6 ? 'u' : 'g';
+      d.days[date] = day;
+    }
+    start = N.addDays(start, L);
+  });
+  return d;
+}
+
+// ---------- Rendering ----------
+function render() {
+  evaluate();
+  const app = document.getElementById('app');
+  let html = demo ? '<div class="demo"><span>Demo-Modus – Beispieldaten, nichts wird gespeichert.</span><button class="btn small" data-act="stopdemo">Beenden</button></div>' : '';
+  if (state.tab === 'heute') html += renderToday();
+  else if (state.tab === 'zyklus') html += renderCycle();
+  else if (state.tab === 'kalender') html += renderCalendar();
+  else if (state.tab === 'jahr') html += renderYear();
+  else html += renderMore();
+  app.innerHTML = html;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
+  const s = N.statusForDate(results, today());
+  document.getElementById('hdrsub').textContent = s ? `ZT ${s.cd} · ${statusText(s.status, true)}` : '';
+  if (state.tab === 'zyklus') { const cw = app.querySelector('.chartwrap'); if (cw) { const sp = cw.dataset.scroll; cw.scrollLeft = sp === 'end' ? cw.scrollWidth : Math.max(0, Number(sp) - cw.clientWidth / 2); } }
+}
+
+// ---------- Eingaben ----------
+function applyField(field, raw) {
+  const date = state.date, day = getDay(date), S = D().settings;
+  if (field === 'temp') {
+    const s = String(raw).trim().replace(',', '.');
+    if (s === '') { setDay(date, { temp: null }); return true; }
+    let v = Number(s);
+    if (!isNaN(v) && v > 340 && v < 420) v = v / 10;       // „365“ -> 36,5
+    if (!isNaN(v) && v > 3400 && v < 4200) v = v / 100;    // „3654“ -> 36,54
+    if (isNaN(v) || v < 35 || v > 39) { toast('Temperatur bitte als z. B. 36,55 eingeben.'); return false; }
+    v = Math.round(v * 100) / 100;
+    const patch = { temp: v };
+    if (!day.zeit && S.messzeit) patch.zeit = S.messzeit;
+    if (!day.ort) patch.ort = S.ort;
+    if (v >= 37.5) toast('Erhöhter Wert – bei Fieber oder Infekt „Störung“ markieren.', 5000);
+    setDay(date, patch); return true;
+  }
+  if (field === 'blutung') {
+    const b = Number(raw) || 0;
+    const patch = { blutung: b || null };
+    if (b >= 2) {
+      const starts = Object.keys(D().days).filter(d => D().days[d].zyklusstart);
+      const near = starts.some(d => { const x = N.diffDays(d, date); return x >= 0 && x <= 10; });
+      const later = starts.find(d => { const x = N.diffDays(date, d); return x >= 1 && x <= 3; });
+      if (later) { D().days[later].zyklusstart = false; delete D().days[later].zyklusstart; patch.zyklusstart = true; toast('Zyklusbeginn auf diesen Tag vorverlegt.'); }
+      else if (!near && !day.zyklusstart) { patch.zyklusstart = true; toast('Neuer Zyklus ab diesem Tag angelegt. Falls es keine Regelblutung ist: „1. Zyklustag“ abwählen.', 5000); }
+    }
+    setDay(date, patch); return true;
+  }
+  setDay(date, { [field]: raw }); return true;
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act;
+  if (a === 'tab') { state.tab = el.dataset.tab; if (state.tab === 'zyklus') state.cycleIdx = null; render(); window.scrollTo(0, 0); }
+  else if (a === 'seg') {
+    const f = el.dataset.field; let v = el.dataset.val; const cur = getDay(state.date)[f];
+    if (f === 'blutung') { applyField('blutung', String(cur || 0) === v ? 0 : v); }
+    else { if (String(cur == null ? '' : cur) === v) v = null; setDay(state.date, { [f]: v === '' ? null : v }); }
+    render();
+  }
+  else if (a === 'day') { const nd = N.addDays(state.date, Number(el.dataset.d)); if (nd <= today()) { state.date = nd; render(); } }
+  else if (a === 'gotoday') { state.date = today(); render(); }
+  else if (a === 'goto') { const ds = el.dataset.date; if (ds > today()) { toast('Zukünftige Tage können noch nicht eingetragen werden.'); return; } state.date = ds; state.tab = 'heute'; render(); window.scrollTo(0, 0); }
+  else if (a === 'cyc') { state.cycleIdx = Math.max(0, Math.min(results.length - 1, state.cycleIdx + Number(el.dataset.d))); render(); }
+  else if (a === 'opencycle') { state.cycleIdx = Number(el.dataset.i); state.tab = 'zyklus'; render(); window.scrollTo(0, 0); }
+  else if (a === 'mon') { const [y, m] = state.month.split('-').map(Number); const d = new Date(y, m - 1 + Number(el.dataset.d), 1); state.month = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); render(); }
+  else if (a === 'clearday') { if (confirm('Alle Eintragungen dieses Tages löschen?')) { delete D().days[state.date]; save(); render(); } }
+  else if (a === 'export') doExport();
+  else if (a === 'import') document.getElementById('importfile').click();
+  else if (a === 'startdemo') { demo = makeDemo(); state.tab = 'zyklus'; state.cycleIdx = null; state.date = today(); render(); }
+  else if (a === 'stopdemo') { demo = null; state.cycleIdx = null; render(); }
+  else if (a === 'wipe') {
+    if (confirm('Wirklich ALLE Daten auf diesem Gerät löschen?') && confirm('Endgültig löschen? Das kann nicht rückgängig gemacht werden.')) { data = emptyData(); demo = null; save(); render(); toast('Alle Daten gelöscht.'); }
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.field) {
+    const f = el.dataset.field;
+    const v = el.type === 'checkbox' ? el.checked : el.value;
+    if (applyField(f, v)) render();
+  } else if (el.dataset.setting) {
+    const k = el.dataset.setting;
+    D().settings[k] = el.type === 'checkbox' ? el.checked : el.value;
+    save(); render(); toast('Gespeichert.');
+  } else if (el.id === 'importfile' && el.files[0]) {
+    const fr = new FileReader();
+    fr.onload = () => {
+      try {
+        const d = JSON.parse(fr.result);
+        if (!d || typeof d.days !== 'object') throw new Error('Keine gültige Sicherung.');
+        if (!confirm(`Sicherung mit ${Object.keys(d.days).length} Tageseinträgen laden? Die aktuellen Daten auf diesem Gerät werden ersetzt.`)) return;
+        d.settings = Object.assign(emptyData().settings, d.settings || {});
+        data = d; demo = null; save(); render(); toast('Sicherung geladen.');
+      } catch (err) { toast('Import fehlgeschlagen: ' + err.message, 5000); }
+      el.value = '';
+    };
+    fr.readAsText(el.files[0]);
+  }
+});
+// Notiz und Freitext ohne Neuzeichnen speichern (Fokus bleibt)
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.field === 'notiz' || el.dataset.field === 'stoergrund') { setDay(state.date, { [el.dataset.field]: el.value }); }
+});
+
+async function doExport() {
+  if (demo) { toast('Im Demo-Modus gibt es nichts zu sichern.'); return; }
+  const json = JSON.stringify(data, null, 1);
+  const name = `zyklus-sicherung-${today()}.json`;
+  const markDone = () => { data.settings.lastExport = today(); save(); render(); };
+  try {
+    const file = new File([json], name, { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Zyklus-Sicherung' });
+      markDone(); toast('Sicherung erstellt.'); return;
+    }
+  } catch (err) { if (err && err.name === 'AbortError') return; }
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  markDone(); toast('Sicherung heruntergeladen.');
+}
+
+// Tageswechsel, wenn App lange offen bleibt
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { const t = today(); if (state.date > t) state.date = t; render(); } });
+
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+render();
+})();
+</script>
+</body>
+</html>
